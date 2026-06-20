@@ -1,0 +1,4 @@
+{"timestamp": 1781991007.012022, "mode": "face_to_face", "direction": "in", "text": "I am so happy to meet you! Thanks for coming.", "emotion": "happy", "meta": {}, "_synced": true}
+{"timestamp": 1781991007.012022, "mode": "face_to_face", "direction": "out", "text": "nice to meet you too", "emotion": "neutral", "meta": {}, "_synced": true}
+{"timestamp": 1781991007.012022, "mode": "tutor", "direction": "out", "text": "Good. Now try spelling: A", "emotion": "neutral", "meta": {}, "_synced": true}
+{"timestamp": 1781991007.012022, "mode": "assistant", "direction": "out", "text": "You asked: what is the weather?. (mock answer)", "emotion": "neutral", "meta": {}, "_synced": true}
