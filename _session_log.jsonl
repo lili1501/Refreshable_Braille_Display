@@ -1,0 +1,3 @@
+{"timestamp": 1781991006.9807627, "mode": "face_to_face", "direction": "in", "text": "Hello!", "emotion": "happy", "meta": {}, "_synced": true}
+{"timestamp": 1781991007.9807627, "mode": "face_to_face", "direction": "out", "text": "Hi back", "emotion": "neutral", "meta": {}, "_synced": true}
+{"timestamp": 1781991008.9807627, "mode": "tutor", "direction": "out", "text": "Spell APPLE", "emotion": "neutral", "meta": {}, "_synced": true}
