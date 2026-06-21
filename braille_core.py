@@ -180,6 +180,7 @@ EMOTION_PREFIX_DOTS: Dict[str, FrozenSet[int]] = {
     "sad":      frozenset((3, 5)),
     "angry":    frozenset((1, 2, 3, 6)),
     "fearful":  frozenset((1, 4, 6)),
+    "disgust":  frozenset((1, 4, 5, 6)),  # distinct pattern for disgust
     "question": frozenset((2, 3, 6)),   # same as '?'
     "urgent":   frozenset((1, 2, 3, 4, 5, 6)),  # full cell = strong alert
 }

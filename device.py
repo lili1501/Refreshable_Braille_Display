@@ -21,7 +21,8 @@ from typing import List
 from braille_core import emotion_to_prefix
 from display_driver import BrailleDisplay
 from input_handler import ChordInput
-from ai_backend import AIBackend, MockSTT, MockLLM, MockTTS
+from ai_backend import (AIBackend, MockSTT, MockLLM, MockTTS,
+                        PiEmotionReceiver, MockEmotionClassifier)
 from cloud_sync import CloudLogger, InteractionEvent, fake_poster_factory
 
 
@@ -84,11 +85,29 @@ class BrailleAIDevice:
         print(f"[ASSIST] display -> {answer!r}")
 
 
-def build_default_device(log_path: str) -> BrailleAIDevice:
+def build_default_device(log_path: str,
+                         use_pi_emotion: bool = False,
+                         pi_serial_port: str = "/dev/ttyUSB0") -> BrailleAIDevice:
+    """Build device with mock providers (testing) or Pi emotion (hardware).
+
+    Args:
+        log_path: Path for the interaction log file.
+        use_pi_emotion: If True, use PiEmotionReceiver for real-time emotion
+                        from the Raspberry Pi's camera+mic model.
+        pi_serial_port: Serial port for Pi communication.
+    """
     if os.path.exists(log_path):
         os.remove(log_path)
     display = BrailleDisplay(num_cells=4)
-    ai = AIBackend(stt=MockSTT(), llm=MockLLM(), tts=MockTTS())
+
+    if use_pi_emotion:
+        emotion_clf = PiEmotionReceiver(port=pi_serial_port)
+        emotion_clf.start()
+    else:
+        emotion_clf = MockEmotionClassifier()
+
+    ai = AIBackend(stt=MockSTT(), llm=MockLLM(), tts=MockTTS(),
+                   emotion_classifier=emotion_clf)
     logger = CloudLogger(sd_path=log_path,
                          webhook_url="https://script.google.com/macros/s/MOCK/exec",
                          poster=fake_poster_factory([]), batch_size=20)
