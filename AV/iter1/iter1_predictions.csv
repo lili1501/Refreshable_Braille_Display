@@ -1,0 +1,11 @@
+file,true,pred
+1009_IEO_SAD_HI.wav,sad,sad
+1070_WSI_NEU_XX.wav,neutral,disgust
+1009_IOM_SAD_XX.wav,sad,fear
+1061_ITS_NEU_XX.wav,neutral,neutral
+1042_IEO_HAP_MD.wav,happy,happy
+1041_TSI_NEU_XX.wav,neutral,sad
+1065_IEO_FEA_HI.wav,fear,fear
+1010_IEO_HAP_MD.wav,happy,fear
+1020_DFA_NEU_XX.wav,neutral,neutral
+1078_TIE_ANG_XX.wav,anger,anger

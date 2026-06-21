@@ -1,0 +1,19 @@
+# ---- Secrets (never commit) ----
+secrets.h
+
+# ---- Runtime logs ----
+*.jsonl
+
+# ---- Python ----
+__pycache__/
+*.pyc
+*.pyo
+
+# ---- Trained models / checkpoints ----
+*.pt
+*.pth
+ft_best.pt
+
+# ---- OS / editor cruft ----
+.DS_Store
+Thumbs.db

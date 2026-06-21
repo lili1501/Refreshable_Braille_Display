@@ -1,0 +1,17 @@
+CREMA-D FINE-TUNED (audio+video) — Results
+best val macroF1=0.893
+TEST acc=0.873 prec=0.875 rec=0.873 macroF1=0.873
+
+              precision    recall  f1-score   support
+
+       anger       0.92      0.93      0.92       191
+     disgust       0.93      0.85      0.89       191
+        fear       0.83      0.81      0.82       190
+       happy       0.95      0.98      0.97       191
+     neutral       0.88      0.87      0.87       163
+         sad       0.74      0.79      0.76       191
+
+    accuracy                           0.87      1117
+   macro avg       0.87      0.87      0.87      1117
+weighted avg       0.87      0.87      0.87      1117
+

@@ -1,0 +1,32 @@
+CREMA-D Emotion Recognition (AUDIO + VIDEO) — Results
+=======================================================
+Clips: 7442 | audio feats: 75 | video feats: 26 | actors: 91
+Split: clip-level stratified (NOT speaker-independent) -> train 5209 / val 1116 / test 1117
+
+[VAL fused] LogisticRegression: acc=0.729 macroF1=0.729
+[VAL fused] SVM_RBF: acc=0.731 macroF1=0.730
+[VAL fused] RandomForest: acc=0.655 macroF1=0.649
+[VAL fused] HistGradientBoosting: acc=0.746 macroF1=0.744
+[VAL fused] MLP: acc=0.737 macroF1=0.736
+
+BEST (validation macro-F1): HistGradientBoosting (0.744)
+[VAL audio] HistGradientBoosting macroF1=0.569
+[VAL video] HistGradientBoosting macroF1=0.624
+[VAL fused] HistGradientBoosting macroF1=0.744
+
+--- TEST (best fused model) ---
+accuracy=0.751 precision=0.750 recall=0.751 macroF1=0.749
+
+Per-class report (TEST):
+              precision    recall  f1-score   support
+
+       anger       0.86      0.85      0.86       191
+     disgust       0.77      0.78      0.78       191
+        fear       0.70      0.59      0.64       190
+       happy       0.80      0.82      0.81       191
+     neutral       0.71      0.74      0.72       163
+         sad       0.66      0.73      0.69       191
+
+    accuracy                           0.75      1117
+   macro avg       0.75      0.75      0.75      1117
+weighted avg       0.75      0.75      0.75      1117
