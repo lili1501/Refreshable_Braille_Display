@@ -21,12 +21,12 @@ Hardware requirements on the Pi:
   - UART serial connection to ESP32 (TX->RX, GND-GND)
 
 Install dependencies:
-  pip install torch transformers librosa opencv-python numpy pyserial sounddevice
+  pip install torch transformers librosa opencv-python numpy pyserial sounddevice gdown
 
 Usage:
-  python emotion_inference.py                        # default: /dev/ttyUSB0
+  python emotion_inference.py                        # auto-downloads from GDrive
   python emotion_inference.py --port /dev/ttyAMA0    # Pi hardware UART
-  python emotion_inference.py --model /path/to/ft_best.pt
+  python emotion_inference.py --model /path/to/ft_best.pt  # use local file
   python emotion_inference.py --no-serial            # print only (testing)
 """
 from __future__ import annotations
@@ -52,10 +52,63 @@ N_FRAMES = 8
 IMG_SIZE = 224
 MAX_AUDIO_LEN = SAMPLE_RATE * MAX_AUDIO_S
 
+# Google Drive model download
+# File ID from: https://drive.google.com/file/d/1oRc44WmF5lV7Hjv9qQM9HC50WCRlfNG-/view
+GDRIVE_FILE_ID = "1oRc44WmF5lV7Hjv9qQM9HC50WCRlfNG-"
+DEFAULT_MODEL_PATH = os.path.expanduser("~/ft_best.pt")
+
 # Serial protocol
 SERIAL_BAUD = 115200
 # Format sent to ESP32: "EMOTION:<label>:<confidence>\n"
 # e.g. "EMOTION:happy:0.62\n"
+
+
+def download_model_from_gdrive(dest_path: str = DEFAULT_MODEL_PATH) -> str:
+    """Download ft_best.pt from Google Drive if not already present locally."""
+    if os.path.exists(dest_path):
+        size_mb = os.path.getsize(dest_path) / (1024 * 1024)
+        if size_mb > 500:  # valid model is ~726MB
+            print(f"[emotion] Model already exists: {dest_path} ({size_mb:.0f} MB)")
+            return dest_path
+        else:
+            print(f"[emotion] Model file too small ({size_mb:.0f} MB), re-downloading...")
+            os.remove(dest_path)
+
+    print(f"[emotion] Downloading model from Google Drive...")
+    print(f"[emotion] File ID: {GDRIVE_FILE_ID}")
+    print(f"[emotion] Destination: {dest_path}")
+
+    try:
+        import gdown
+        url = f"https://drive.google.com/uc?id={GDRIVE_FILE_ID}"
+        gdown.download(url, dest_path, quiet=False)
+    except ImportError:
+        # Fallback: use requests directly with Drive's confirm flow
+        print("[emotion] gdown not installed, using requests fallback...")
+        import requests
+        session = requests.Session()
+        url = f"https://drive.google.com/uc?export=download&id={GDRIVE_FILE_ID}"
+        response = session.get(url, stream=True)
+        # Handle large file confirmation token
+        for key, value in response.cookies.items():
+            if key.startswith("download_warning"):
+                url = f"{url}&confirm={value}"
+                response = session.get(url, stream=True)
+                break
+        with open(dest_path, "wb") as f:
+            for chunk in response.iter_content(chunk_size=32768):
+                if chunk:
+                    f.write(chunk)
+
+    size_mb = os.path.getsize(dest_path) / (1024 * 1024)
+    print(f"[emotion] Download complete: {size_mb:.0f} MB")
+    if size_mb < 500:
+        raise RuntimeError(
+            f"Downloaded model is only {size_mb:.0f} MB (expected ~726 MB). "
+            f"The Google Drive link may have expired or the file is not shared publicly. "
+            f"Please re-share the file with 'Anyone with the link' access."
+        )
+    return dest_path
 
 
 def load_model(checkpoint_path: str):
@@ -223,8 +276,9 @@ def main():
         description="Raspberry Pi emotion recognition for BrailleAI"
     )
     parser.add_argument(
-        "--model", default="ft_best.pt",
-        help="Path to ft_best.pt checkpoint (default: ./ft_best.pt)"
+        "--model", default=None,
+        help="Path to ft_best.pt checkpoint. If not provided or not found, "
+             "auto-downloads from Google Drive to ~/ft_best.pt"
     )
     parser.add_argument(
         "--port", default="/dev/ttyUSB0",
@@ -260,8 +314,18 @@ def main():
     )
     args = parser.parse_args()
 
+    # Resolve model path (download from GDrive if needed)
+    model_path = args.model
+    if model_path and os.path.exists(model_path):
+        pass  # use provided path
+    elif model_path and not os.path.exists(model_path):
+        print(f"[emotion] Model not found at {model_path}, downloading...")
+        model_path = download_model_from_gdrive()
+    else:
+        model_path = download_model_from_gdrive()
+
     # Load model
-    model, class_labels, audio_fe, device = load_model(args.model)
+    model, class_labels, audio_fe, device = load_model(model_path)
 
     # Open camera
     import cv2
